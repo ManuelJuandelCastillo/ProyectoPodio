@@ -29,9 +29,18 @@
                 <li><a class="links" href="areaResponsables.php">area responsables</a></li>
                 <?php
                 }
+                if ($_SESSION['tipo_usuario'] != 'admin') {
                 ?>
                 <li><a class="links" href="datosPersonales.php">mis datos</a></li>
                 <li><a class="links" href="cambiarClave.php">cambiar contraseña</a></li>
+                <?php
+                } else {
+                ?>
+                <li><a class="links" href="admIndex.php">ver por equipo</a></li>
+                <li><a class="links" href="admDatosJugadora.php">ver por documento</a></li>
+                <?php
+                }
+                ?>
                 <li><a id="logout" href="cerrarSesion.php">cerrar sesión</a></li>
             </ul>
         </div>

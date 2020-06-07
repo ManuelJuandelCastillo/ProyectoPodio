@@ -1,0 +1,45 @@
+
+/* seccion de imagenes 
+    exclusivo de esta pagina */
+    .check-container{
+        font-size: 14px;
+        width: 160px;
+    }
+    .check-ficha{
+        margin: auto;
+    }
+    .img-section{
+        width: 90%;
+        max-width: 840px;
+        margin: 20px auto;
+        padding: 0;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px 0 var(--gris-oscuro);
+        background-color: var(--color-card);
+    }
+    
+    .img-container{
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        justify-content: space-around;
+        margin: 30px 10px;
+        padding-bottom: 30px;
+    }
+    
+    .img-card{
+        max-width: 250px;
+        padding: 20px 15px;
+        margin: 15px auto;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px var(--gris-oscuro);
+        background-color: var(--color-fondos);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .img-card span{
+        margin: 10px;
+    }
+    /* fin seccion imagenes */

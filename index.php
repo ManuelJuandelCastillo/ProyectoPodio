@@ -1,8 +1,13 @@
 <?php
 session_start();
 // comprueba si existe sesion
-if (isset($_SESSION['dni'])) {
-    header('location:datosPersonales.php');
+if (isset($_SESSION['tipo_usuario'])) {
+    // comprueba si la sesion es de admin o no
+    if ($_SESSION['tipo_usuario'] == 'admin') {
+        header('location:admIndex.php');
+    } else {
+        header('location:datosPersonales.php');
+    }
 } else {
     // si no hay sesion, se fija si se envio el form de login
     if (isset($_POST['logear'])) {
@@ -10,10 +15,10 @@ if (isset($_SESSION['dni'])) {
         $clave = md5($_POST['pass']);
 
         require_once 'Conexion.php';
-        $conexion = new Conexion;
-        $res = $conexion->prepare('select documento, clave from personas where documento = :dni');
-        $res->execute([':dni' => $dni]);
-        $campo = $res->fetch(PDO::FETCH_ASSOC);
+        $dbh = new Conexion;
+        $sth = $dbh->prepare('select documento, clave from personas where documento = :dni');
+        $sth->execute([':dni' => $dni]);
+        $campo = $sth->fetch(PDO::FETCH_ASSOC);
 
         if (isset($campo['clave'])) {
             if ($clave == $campo['clave']) {
@@ -21,25 +26,40 @@ if (isset($_SESSION['dni'])) {
 
                 // logeo correcto - ahora consulta si figura como delegada de algun equipo
                 $query = 'select count(*) from equipos where documento_delegada_1 = :dni1 or documento_delegada_2 = :dni2 or documento_delegada_3 = :dni3';
-                $resp = $conexion->prepare($query);               
-                $resp->execute([':dni1'=>$dni, ':dni2'=>$dni, ':dni3'=>$dni]);
-                $reg = $resp->fetch(PDO::FETCH_ASSOC);
-                
+                $sth = $dbh->prepare($query);
+                $sth->execute([':dni1' => $dni, ':dni2' => $dni, ':dni3' => $dni]);
+                $reg = $sth->fetch(PDO::FETCH_ASSOC);
+
                 // si figura como delegada se le asigna el valor responsable
-                $_SESSION['filas']=$reg['count(*)'];
                 if ($reg['count(*)'] > 0) {
-                    $_SESSION['tipo_usuario']='responsable';
-                }else{
-                    $_SESSION['tipo_usuario']='no responsable';
+                    $_SESSION['tipo_usuario'] = 'responsable';
+                } else {
+                    $_SESSION['tipo_usuario'] = 'no responsable';
                 }
                 header('location:datosPersonales.php');
             } else {
                 // contraseña incorrecta
-                 $error = 'usuario y/o contraseña incorrecta';
+                $error = 'usuario y/o contraseña incorrecta';
             }
         } else {
-            // usuario incorrecto
-            $error = 'usuario y/o contraseña incorrecta';
+            // usuario no existe en tabla personas. ver si es admin
+            $sth = $dbh->prepare('select * from usuarios where mail=:user');
+            $sth->execute([':user' => $dni]);
+            $campo = $sth->fetch((PDO::FETCH_ASSOC));
+
+            if (isset($campo['clave'])) {
+                if ($clave == $campo['clave']) {
+                    // logeo de admin correcto
+                    $_SESSION['tipo_usuario'] = 'admin';
+                    header('location:admIndex.php');
+                } else {
+                    // contraseña incorrecta
+                    $error = 'usuario y/o contraseña incorrecta';
+                }
+            } else {
+                // contraseña incorrecta
+                $error = 'usuario y/o contraseña incorrecta';
+            }
         }
     }
 }

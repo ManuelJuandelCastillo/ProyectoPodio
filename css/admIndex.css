@@ -1,7 +1,7 @@
 /* ********************************************** */
 /* selector equipo */
 .selector-equipo-container{
-    padding: 10px 0;
+    padding: 0 0 10px 0;
 }
 
 .form-selector{
@@ -25,4 +25,30 @@
 .selector-equipo:focus{
     border: var(--azul) solid 2px;
 }
+.card-container{
+    margin: 10px 0;
+}
+.main-container{
+    padding-bottom: 0;
+}
 
+/* tabla lista de buena fe */
+table{
+    font-size: 14px;
+    width: 100%;
+    margin: auto;
+    padding: 0;
+    border-radius: 4px;
+    background-color: var(--gris-2);
+    box-shadow: 0 2px 4px 1px var(--gris-2);
+}
+tr{
+    background-color: var(--color-card);
+}
+th{
+    padding: 15px 0 10px 0;
+    background-color: var(--gris-2);
+}
+td{
+    padding: 10px 15px;
+}

@@ -60,9 +60,9 @@ require_once 'include/navbar.php';
 <!-- inicio contenido de la pagina -->
 
 <!-- selector de equipo -->
-<section class="main-container" id="selector-equipo-container">
+<section class="main-container selector-equipo-container">
     <form action="<?= $_SERVER['PHP_SELF'] ?>" method="POST" class="form-selector">
-        <select name="selector-equipo" id="selector-equipo">
+        <select name="selector-equipo" class="selector-equipo">
             <option value="default">-- Seleccionar equipo --</option>
 
             <?php while ($equipo = $sthEquipos->fetch(PDO::FETCH_ASSOC)) { ?>

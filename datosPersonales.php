@@ -31,7 +31,7 @@ if (isset($_SESSION['dni'])) {
     header('location:index.php');
 }
 
-// agregamos el header
+// incluir cabeceras
 require_once 'include/header.php';
 ?>
 <!-- css especifico de pagina -->
