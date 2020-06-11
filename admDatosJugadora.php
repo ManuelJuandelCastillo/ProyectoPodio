@@ -66,7 +66,7 @@ require_once 'include/navbar.php';
     <form action="<?=$_SERVER['PHP_SELF']?>" method="GET" class="form-selector">
     <div class="card-container">
         <label for="dni">buscar por DNI:</label>    
-        <input type="text" name="dni" id="dni">
+        <input type="text" name="dni" id="dni" autofocus>
         <button type="submit" class="form-btn">ver info jugadora</button>
     </div>
     </form>
@@ -133,7 +133,7 @@ if(isset($_GET['dni'])){
 <section class="img-section">
     <h2>imagenes</h2>
     <form action="<?= $_SERVER['PHP_SELF'] ?>" method="GET">
-    <input type="text" name="dni" value="<?=$_GET['dni'] ?>">
+    <input type="text" name="dni" class="input-dni-oculto" value="<?=$_GET['dni'] ?>" readonly>
         <div class="check-container check-ficha">
             <label for="ficha_ok">Ficha: </label>
             <input type="checkbox" name="ficha_ok" id="ficha_ok" <?php if ($campo_data['ficha_ok'] == 'OK') {
@@ -199,7 +199,10 @@ if(isset($_GET['dni'])){
 
 <?php
 // cierre del if
-} 
+}
+?>
+<script src="scripts/admDatosJugadora.js"></script>
+<?php
 // incluir script navbar y cierre de etiquetas body y html
 require_once 'include/footer.php';
 ?>

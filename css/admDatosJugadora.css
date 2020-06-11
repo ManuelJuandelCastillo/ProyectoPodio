@@ -1,6 +1,12 @@
 
-/* seccion de imagenes 
-    exclusivo de esta pagina */
+#dni:focus{
+    border-bottom: var(--violeta) solid 3px;
+}
+/* seccion de imagenes */
+    .input-dni-oculto{
+        display: none;
+    }
+
     .check-container{
         font-size: 14px;
         width: 160px;
