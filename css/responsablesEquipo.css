@@ -21,6 +21,11 @@
     display: flex;
     flex-direction: column;
 }
+p{
+    margin: auto;
+    padding: 10px;
+    color: var(--gris-oscuro);
+}
 .form-card-container input{
     color: rgb(70, 70, 70);
 }

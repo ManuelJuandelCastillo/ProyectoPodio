@@ -9,10 +9,10 @@ if (!isset($_SESSION['equipo'])) {
         $equipo_torneo = $_SESSION['equipo'];
 
         // obtener fecha de cierre de modificacion de lista de buena fe y responsables
-        $sth = $dbh->prepare('select fecha_cierre_lista_buena_fe from torneos where torneo = :torneo');
+        $sth = $dbh->prepare('select fecha_fin from torneos where torneo = :torneo');
         $sth->execute([':torneo' => $equipo_torneo[1]]);
         $fecha_limite = $sth->fetch(PDO::FETCH_ASSOC);
-        $fecha_limite = strtotime($fecha_limite['fecha_cierre_lista_buena_fe']);
+        $fecha_limite = strtotime($fecha_limite['fecha_fin']);
         $fecha_actual = strtotime(date('d-m-Y', time()));
 
         if ($_GET['action'] == 'delete' && $fecha_actual<$fecha_limite) {

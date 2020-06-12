@@ -49,7 +49,11 @@ td{
 
 /* ********************************** */
 /* seccion form modal */
-
+p{
+    margin: auto;
+    padding: 10px;
+    color: var(--gris-oscuro);
+}
 .form-card-container{
     position: relative;
     width: 90%;

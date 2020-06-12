@@ -122,6 +122,7 @@ require_once 'include/navbar.php';
                     <div id="cerrarModal-line1"></div>
                     <div id="cerrarModal-line2"></div>
                 </button>
+                <p>Buscar por DNI. Si la persona no existe en el sistema, completar todos los campos para dar de alta.</p>
                 <form>
                     <div class="card-container">
                         <div class="form-group">

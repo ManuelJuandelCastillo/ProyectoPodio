@@ -18,11 +18,11 @@ if (!isset($_SESSION['equipo'])) {
     $delegada3 = ($datos_equipo['documento_delegada_3'] > 0) ? $equipo->getDatosDelegado($datos_equipo['documento_delegada_3']) : ['documento' => 0, 'nombres' => '', 'apellidos' => ''];
     $entrenador = ($datos_equipo['documento_entrenador'] > 0) ? $equipo->getDatosDelegado($datos_equipo['documento_entrenador']) : ['documento' => 0, 'nombres' => '', 'apellidos' => ''];
 
-    // obtener fecha de cierre de modificacion de lista de buena fe y responsables
-    $sth = $dbh->prepare('select fecha_cierre_lista_buena_fe from torneos where torneo = :torneo');
+    // obtener fecha de cierre de modificacion de responsables
+    $sth = $dbh->prepare('select fecha_fin from torneos where torneo = :torneo');
     $sth->execute([':torneo' => $equipo_torneo[1]]);
     $fecha_limite = $sth->fetch(PDO::FETCH_ASSOC);
-    $fecha_limite = strtotime($fecha_limite['fecha_cierre_lista_buena_fe']);
+    $fecha_limite = strtotime($fecha_limite['fecha_fin']);
     $fecha_actual = strtotime(date('d-m-Y', time()));
 }
 
@@ -197,6 +197,7 @@ require_once 'include/navbar.php';
                     <div id="cerrarModal-line1"></div>
                     <div id="cerrarModal-line2"></div>
                 </button>
+                <p>Buscar por DNI. Si la persona no existe en el sistema, completar todos los campos para dar de alta.</p>
                 <form>
                     <div class="card-container">
                         <div class="form-group">
