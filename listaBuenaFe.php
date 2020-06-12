@@ -26,7 +26,7 @@ if (!isset($_SESSION['equipo'])) {
     // aca iria el ccodigo para agregar una jugadora si se presiono el boton submit
 
     // codigo que trae los datos de equipo y jugadoras
-    $sth_lbf = $dbh->prepare('SELECT p.apellidos, p.nombres, p.documento, p.carnet FROM lista_buena_fe as t join personas as p on t.documento=p.documento WHERE t.nombre_equipo = :equipo and torneo = :torneo and t.marcado_baja is null');
+    $sth_lbf = $dbh->prepare('SELECT p.apellidos, p.nombres, p.documento, p.carnet, p.carnet_fmv FROM lista_buena_fe as t join personas as p on t.documento=p.documento WHERE t.nombre_equipo = :equipo and torneo = :torneo and t.marcado_baja is null');
     $sth_lbf->execute([':equipo' => $equipo_torneo[0], ':torneo' => $equipo_torneo[1]]);
 }
 
@@ -70,14 +70,14 @@ require_once 'include/navbar.php';
     <table>
         <tr id="cabecera-tabla">
             <th>DNI</th>
-            <th>Apellido, nombre (carnet)</th>
+            <th>Apellido, nombre (carnet - fmv)</th>
         </tr>
         <?php
         while ($jugadora = $sth_lbf->fetch(PDO::FETCH_ASSOC)) {
         ?>
             <tr>
                 <td class="columna-dni"><?= $jugadora['documento'] ?></td>
-                <td class="columna-nombre"><?= $jugadora['apellidos'] ?>, <?= $jugadora['nombres'] ?> (<?= $jugadora['carnet'] ?>)</td>
+                <td class="columna-nombre"><?= $jugadora['apellidos'] ?>, <?= $jugadora['nombres'] ?> (<?= $jugadora['carnet'] ?> - <?=$jugadora['carnet_fmv']?>)</td>
 
                 <?php
                 if ($fecha_actual < $fecha_limite) {
@@ -107,6 +107,7 @@ require_once 'include/navbar.php';
             }
             ?>
             <a href="lbfpdf.php" target="_blank" rel="noopener noreferrer" class="form-btn btn-agregar-jugadora">imprimir lista</a>
+            <a href="planillaEntrenador.php" class="form-btn btn-agregar-jugadora">generar planilla</a>
         </div>
     </div>
 

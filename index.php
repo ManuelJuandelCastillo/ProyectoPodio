@@ -25,9 +25,9 @@ if (isset($_SESSION['tipo_usuario'])) {
                 $_SESSION['dni'] = $dni;
 
                 // logeo correcto - ahora consulta si figura como delegada de algun equipo
-                $query = 'select count(*) from equipos where documento_delegada_1 = :dni1 or documento_delegada_2 = :dni2 or documento_delegada_3 = :dni3';
+                $query = 'select count(*) from equipos where documento_delegada_1 = :dni1 or documento_delegada_2 = :dni2 or documento_delegada_3 = :dni3 or documento_entrenador = :dni4';
                 $sth = $dbh->prepare($query);
-                $sth->execute([':dni1' => $dni, ':dni2' => $dni, ':dni3' => $dni]);
+                $sth->execute([':dni1' => $dni, ':dni2' => $dni, ':dni3' => $dni, ':dni4'=>$dni]);
                 $reg = $sth->fetch(PDO::FETCH_ASSOC);
 
                 // si figura como delegada se le asigna el valor responsable

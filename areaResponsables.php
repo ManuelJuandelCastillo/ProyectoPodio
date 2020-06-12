@@ -7,9 +7,9 @@ if (isset($_SESSION['dni'])) {
         $dbh = new Conexion;
 
         // traer equipos de los que fue/es responsable para selector-equipo
-        $query = 'select * from equipos where documento_delegada_1 = :dni1 or documento_delegada_2 = :dni2 or documento_delegada_3 = :dni3';
+        $query = 'select * from equipos where documento_delegada_1 = :dni1 or documento_delegada_2 = :dni2 or documento_delegada_3 = :dni3 or documento_entrenador = :dni4';
         $sthEquipos = $dbh->prepare($query);
-        $sthEquipos->execute([':dni1' => $dni, ':dni2' => $dni, ':dni3' => $dni]);
+        $sthEquipos->execute([':dni1' => $dni, ':dni2' => $dni, ':dni3' => $dni, ':dni4'=>$dni]);
 
         // se comprueba si se selecciono un equipo del selector o si existe la variable de sesion
         if ((isset($_POST['seleccionar-equipo']) && $_POST['selector-equipo'] != 'default') || isset($_SESSION['equipo'])) {
