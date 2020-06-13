@@ -23,12 +23,41 @@ if (!isset($_SESSION['equipo'])) {
         header('location:' . $_SERVER['PHP_SELF']);
     }
 
-    // aca iria el ccodigo para agregar una jugadora si se presiono el boton submit
+    // agregar jugadora a la lista
+    if (isset($_POST['guardar-jugadora'])) {
+        $documento = $_POST['dni'];
+        $nombre = strtoupper($_POST['nombre']);
+        $apellido = strtoupper($_POST['apellido']);
 
-    // codigo que trae los datos de equipo y jugadoras
-    $sth_lbf = $dbh->prepare('SELECT p.apellidos, p.nombres, p.documento, p.carnet, p.carnet_fmv FROM lista_buena_fe as t join personas as p on t.documento=p.documento WHERE t.nombre_equipo = :equipo and torneo = :torneo and t.marcado_baja is null');
-    $sth_lbf->execute([':equipo' => $equipo_torneo[0], ':torneo' => $equipo_torneo[1]]);
+        $sth = $dbh->prepare('select * from personas where documento = :doc');
+        $sth->execute([':doc' => $documento]);
+        $data = $sth->fetch(PDO::FETCH_ASSOC);
+
+        // si no existe la persona en la DDBB crea el registro
+        if (!isset($data['documento'])) {
+            $sth = $dbh->prepare('insert into personas (documento, apellidos, nombres) values (:doc, :apellido, :nombre)');
+            $sth->execute([':doc' => $documento, ':apellido' => $apellido, ':nombre' => $nombre]);
+        }
+
+        $sth = $dbh->prepare('select documento from lista_buena_fe where torneo = :torneo and nombre_equipo = :equipo');
+        $sth->execute([':torneo' => $equipo_torneo[1], ':equipo' => $equipo_torneo[0]]);
+        $contador = 0;
+        while ($lista = $sth->fetch(PDO::FETCH_ASSOC)) {
+            if ($documento == $lista['documento']) {
+                $contador += 1;
+            }
+        }
+        if ($contador == 0) {
+            $sth = $dbh->prepare('insert into lista_buena_fe (categoria, torneo, nombre_equipo, documento, documento_alta, fecha_alta) values (:cat, :torneo, :equipo, :doc, :dni, :fecha)');
+            $sth->execute([':cat'=>'MAXIVOLEY', ':torneo'=>$equipo_torneo[1], ':equipo'=>$equipo_torneo[0], ':doc' => $documento, ':dni' => $_SESSION['dni'], ':fecha' => date('Y-m-d')]);
+        }
+    }
 }
+
+// codigo que trae los datos de equipo y jugadoras
+$sth_lbf = $dbh->prepare('SELECT p.apellidos, p.nombres, p.documento, p.carnet, p.carnet_fmv FROM lista_buena_fe as t join personas as p on t.documento=p.documento WHERE t.nombre_equipo = :equipo and torneo = :torneo and t.marcado_baja is null');
+$sth_lbf->execute([':equipo' => $equipo_torneo[0], ':torneo' => $equipo_torneo[1]]);
+
 
 // incluir header
 require_once 'include/header.php';
@@ -77,7 +106,7 @@ require_once 'include/navbar.php';
         ?>
             <tr>
                 <td class="columna-dni"><?= $jugadora['documento'] ?></td>
-                <td class="columna-nombre"><?= $jugadora['apellidos'] ?>, <?= $jugadora['nombres'] ?> (<?= $jugadora['carnet'] ?> - <?=$jugadora['carnet_fmv']?>)</td>
+                <td class="columna-nombre"><?= $jugadora['apellidos'] ?>, <?= $jugadora['nombres'] ?> (<?= $jugadora['carnet'] ?> - <?= $jugadora['carnet_fmv'] ?>)</td>
 
                 <?php
                 if ($fecha_actual < $fecha_limite) {
@@ -123,23 +152,23 @@ require_once 'include/navbar.php';
                     <div id="cerrarModal-line2"></div>
                 </button>
                 <p>Buscar por DNI. Si la persona no existe en el sistema, completar todos los campos para dar de alta.</p>
-                <form method="POST" action="">
+                <form method="POST" action="<?=$_SERVER['PHP_SELF']?>">
                     <div class="card-container">
                         <div class="form-group">
                             <label for="dni">dni</label>
-                            <input type="text" name="dni" id="dni" required autofocus>
+                            <input type="text" name="dni" id="dniFiltro" required autofocus>
                         </div>
                         <div class="form-group">
                             <label for="nombre">nombre</label>
-                            <input type="text" name="nombre" id="nombre" required>
+                            <input type="text" name="nombre" id="nombreFiltro" required>
                         </div>
                         <div class="form-group">
                             <label for="apellido">apellido</label>
-                            <input type="text" name="apellido" id="apellido" required>
+                            <input type="text" name="apellido" id="apellidoFiltro" required>
                         </div>
                     </div>
                     <div class="form-btn-container">
-                        <button type="submit" class="form-btn">guardar cambios</button>
+                        <button type="submit" class="form-btn" name="guardar-jugadora">guardar cambios</button>
                     </div>
                 </form>
             </div>

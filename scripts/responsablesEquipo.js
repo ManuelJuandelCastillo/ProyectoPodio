@@ -25,11 +25,6 @@ let dniFiltro = document.getElementById("dniFiltro")
 let nombreFiltro = document.getElementById("nombreFiltro")
 let apellidoFiltro = document.getElementById("apellidoFiltro")
 
-
-
-
-
-
 let allJugadoras = []
 
 // FILTRO QUE LLENA LOS INPUT MODAL
@@ -40,7 +35,7 @@ const filtro = () => {
 
     dniFiltro.addEventListener("keyup", (e) => {
         let buscaDni = dniFiltro.value;
-        console.log(buscaDni)
+        // console.log(buscaDni)
         if (buscaDni == '') {
             nombreFiltro.value = '';
             apellidoFiltro.value = '';
