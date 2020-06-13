@@ -66,7 +66,7 @@ require_once 'include/navbar.php';
     <form action="<?=$_SERVER['PHP_SELF']?>" method="GET" class="form-selector">
     <div class="card-container">
         <label for="dni">buscar por DNI:</label>    
-        <input type="text" name="dni" id="dni" autofocus>
+        <input type="text" name="dni" id="dni" autofocus required>
         <button type="submit" class="form-btn">ver info jugadora</button>
     </div>
     </form>

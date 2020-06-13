@@ -146,7 +146,7 @@ require_once 'include/navbar.php';
                 <a class="form-btn links-equipo" href="listaBuenaFe.php">lista de buena fe</a>
             </div>
             <div class="group-links">
-                <a class="form-btn links-equipo" href="">preferencias hora/cancha</a>
+                <a class="form-btn links-equipo" href="preferenciaHoraria.php">preferencias hora/cancha</a>
             </div>
         </div>
     </section>

@@ -62,7 +62,7 @@ require_once 'include/navbar.php';
             <a class="form-btn links-equipo" href="responsablesEquipo.php">ver responsables</a>
         </div>
         <div class="group-links">
-            <a class="form-btn links-equipo" href="">preferencias hora/cancha</a>
+            <a class="form-btn links-equipo" href="preferenciaHoraria.php">preferencias hora/cancha</a>
         </div>
     </div>
 </section>
@@ -123,19 +123,19 @@ require_once 'include/navbar.php';
                     <div id="cerrarModal-line2"></div>
                 </button>
                 <p>Buscar por DNI. Si la persona no existe en el sistema, completar todos los campos para dar de alta.</p>
-                <form>
+                <form method="POST" action="">
                     <div class="card-container">
                         <div class="form-group">
                             <label for="dni">dni</label>
-                            <input type="text" name="dni" id="dni">
+                            <input type="text" name="dni" id="dni" required autofocus>
                         </div>
                         <div class="form-group">
                             <label for="nombre">nombre</label>
-                            <input type="text" name="nombre" id="nombre">
+                            <input type="text" name="nombre" id="nombre" required>
                         </div>
                         <div class="form-group">
                             <label for="apellido">apellido</label>
-                            <input type="text" name="apellido" id="apellido">
+                            <input type="text" name="apellido" id="apellido" required>
                         </div>
                     </div>
                     <div class="form-btn-container">
