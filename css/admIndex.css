@@ -32,9 +32,27 @@
     padding-bottom: 0;
 }
 
+/* sector preferencias */
+h3{
+    text-transform: capitalize;
+    text-align: center;
+    font-weight: 400;
+    font-size: 20px;
+    border-bottom: var(--gris-2) solid 2px;
+}
+.preferencias-container{
+    text-align: center;
+}
+.preferencias-group{
+    background-color: var(--color-fondos);
+    border-radius: 4px;
+}
+.input-pref{
+    text-align: center;
+}
+
 /* tabla lista de buena fe */
 table{
-    font-size: 14px;
     width: 100%;
     margin: auto;
     padding: 0;
@@ -44,11 +62,21 @@ table{
 }
 tr{
     background-color: var(--color-card);
+    transition: 0.3s;
+}
+tbody tr:hover{
+    background-color: var(--azul);
+    color: var(--color-card);
 }
 th{
     padding: 15px 0 10px 0;
     background-color: var(--gris-2);
+    text-transform: capitalize;
 }
 td{
-    padding: 10px 15px;
+    padding: 10px 5px;
+}
+.col-dni, .col-carnet, th{
+    font-size: 14px;
+    text-align: center;
 }

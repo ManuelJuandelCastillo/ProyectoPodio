@@ -18,8 +18,8 @@ if (!isset($_SESSION['equipo'])) {
         $data = $sth->fetch(PDO::FETCH_ASSOC);
 
         if (!isset($data['documento'])) {
-            $sth = $dbh->prepare('insert into personas (documento, nombres, apellidos) values (:doc, :nombre, :apellido)');
-            $sth->execute([':doc' => $documento, ':nombre' => $nombre, ':apellido' => $apellido]);
+            $sth = $dbh->prepare('insert into personas (documento, nombres, apellidos, clave, fecha_alta) values (:doc, :nombre, :apellido, :clave, :alta)');
+            $sth->execute([':doc' => $documento, ':nombre' => $nombre, ':apellido' => $apellido, ':clave'=>md5($documento), ':alta'=>date('Y-m-d')]);
         }
 
         switch ($resp) {

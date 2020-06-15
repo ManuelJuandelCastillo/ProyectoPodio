@@ -2,6 +2,9 @@
 #dni:focus{
     border-bottom: var(--violeta) solid 3px;
 }
+.ultimo-carnet{
+    text-align: center;
+}
 /* seccion de imagenes */
     .input-dni-oculto{
         display: none;
@@ -34,6 +37,7 @@
     }
     
     .img-card{
+        position: relative;
         max-width: 250px;
         padding: 20px 15px;
         margin: 15px auto;
@@ -44,7 +48,6 @@
         flex-direction: column;
         align-items: center;
     }
-    
     .img-card span{
         margin: 10px;
     }

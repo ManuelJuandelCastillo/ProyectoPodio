@@ -47,7 +47,7 @@ require_once 'include/navbar.php';
 
 <!-- generador de lista de jugadoras para el partido -->
 <section class="main-container">
-    <form target="_blank" action="pruebaPlanilla.php" method="POST">
+    <form target="_blank" action="planillaEntrenadorPDF.php" method="POST">
         <table>
             <tr id="cabecera-tabla">
                 <th></th>

@@ -13,8 +13,5 @@ $sth = $dbh->prepare('SELECT p.apellidos, p.nombres, p.documento, p.carnet FROM 
 $sth->execute([':torneo'=> $torneo, ':equipo'=>$equipo]);
 
 $lista = $sth->fetchAll(PDO::FETCH_ASSOC);
-$listaJSON = json_encode($lista);
-
-echo $listaJSON;
-$dbh = null;
+echo json_encode($lista);
 ?>

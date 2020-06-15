@@ -88,15 +88,9 @@ include_once 'include/navbar.php';
             <label for="localidad">Localidad</label>
             <input type="text" readonly value="<?= $campo_data['localidad'] ?>">
         </div>
-        <div class="check-container">
-            <label for="check">Acepto reglamento y condiciones (<a href="">leer</a>)</label>
-            <input type="checkbox" readonly <?php if ($campo_data['ficha_ok'] == 'OK') {
-                                                echo 'checked';
-                                            } ?>>
-        </div>
     </div>
     <div class="form-btn-container">
-        <a class="form-btn" href="actualizarDatos.php">actualizar datos</a>
+        <a class="form-btn" href="actualizarDatos.php">modificar datos</a>
     </div>
 </section>
 

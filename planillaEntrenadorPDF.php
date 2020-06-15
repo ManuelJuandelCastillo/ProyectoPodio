@@ -58,7 +58,7 @@ for ($i = 0; $i < 18; $i++) {
 
         $carnet = $campo['carnet']!=0 ? $campo['carnet'] : $campo['documento'];
         $faltantes ='';
-        if($campo['ficha_ok']!='OK'){$faltantes.=' T';}
+        if($campo['fecha_ticket']==NULL){$faltantes.=' T';}
         if($campo['foto_4x4_ok']!='OK'){$faltantes.=' F';}
         if($campo['dni_frente_ok']!='OK'){$faltantes.=' DF';}
         if($campo['dni_dorso_ok']!='OK'){$faltantes.=' DD';}

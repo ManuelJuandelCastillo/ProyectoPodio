@@ -8,10 +8,10 @@ if (!isset($_SESSION['equipo'])) {
     $dbh = new Conexion;
 
     // obtener fecha de cierre de modificacion de lista de buena fe y responsables
-    $sth = $dbh->prepare('select fecha_cierre_lista_buena_fe from torneos where torneo = :torneo');
+    $sth = $dbh->prepare('select * from torneos where torneo = :torneo');
     $sth->execute([':torneo' => $equipo_torneo[1]]);
-    $fecha_limite = $sth->fetch(PDO::FETCH_ASSOC);
-    $fecha_limite = strtotime($fecha_limite['fecha_cierre_lista_buena_fe']);
+    $datos_torneo = $sth->fetch(PDO::FETCH_ASSOC);
+    $fecha_limite = strtotime($datos_torneo['fecha_cierre_lista_buena_fe']);
     $fecha_actual = strtotime(date('d-m-Y', time()));
     // comparando las fechas se comprueba si se pueden realizar modificaciones o no
 
@@ -35,8 +35,8 @@ if (!isset($_SESSION['equipo'])) {
 
         // si no existe la persona en la DDBB crea el registro
         if (!isset($data['documento'])) {
-            $sth = $dbh->prepare('insert into personas (documento, apellidos, nombres) values (:doc, :apellido, :nombre)');
-            $sth->execute([':doc' => $documento, ':apellido' => $apellido, ':nombre' => $nombre]);
+            $sth = $dbh->prepare('insert into personas (documento, apellidos, nombres, clave, fecha_alta) values (:doc, :apellido, :nombre,:clave, :alta)');
+            $sth->execute([':doc' => $documento, ':apellido' => $apellido, ':nombre' => $nombre, ':clave'=>md5($documento), ':alta'=>date('Y-m-d')]);
         }
 
         $sth = $dbh->prepare('select documento from lista_buena_fe where torneo = :torneo and nombre_equipo = :equipo');
@@ -48,16 +48,18 @@ if (!isset($_SESSION['equipo'])) {
             }
         }
         if ($contador == 0) {
-            $sth = $dbh->prepare('insert into lista_buena_fe (categoria, torneo, nombre_equipo, documento, documento_alta, fecha_alta) values (:cat, :torneo, :equipo, :doc, :dni, :fecha)');
-            $sth->execute([':cat'=>'MAXIVOLEY', ':torneo'=>$equipo_torneo[1], ':equipo'=>$equipo_torneo[0], ':doc' => $documento, ':dni' => $_SESSION['dni'], ':fecha' => date('Y-m-d')]);
+            $sth = $dbh->prepare('insert into lista_buena_fe (categoria, torneo, nombre_equipo, documento, documento_alta, fecha_alta, marcado_baja) values (:cat, :torneo, :equipo, :doc, :dni, :fecha, null)');
+            $sth->execute([':cat'=>$datos_torneo['categoria'], ':torneo'=>$equipo_torneo[1], ':equipo'=>$equipo_torneo[0], ':doc' => $documento, ':dni' => $_SESSION['dni'], ':fecha' => date('Y-m-d')]);
+        }else{
+            $sth = $dbh->prepare('update lista_buena_fe set marcado_baja=null where torneo=:torneo and nombre_equipo=:equipo and documento=:doc');
+            $sth->execute([':torneo'=>$equipo_torneo[1], ':equipo'=>$equipo_torneo[0], ':doc'=>$documento]);
         }
     }
 }
 
 // codigo que trae los datos de equipo y jugadoras
-$sth_lbf = $dbh->prepare('SELECT p.apellidos, p.nombres, p.documento, p.carnet, p.carnet_fmv FROM lista_buena_fe as t join personas as p on t.documento=p.documento WHERE t.nombre_equipo = :equipo and torneo = :torneo and t.marcado_baja is null');
+$sth_lbf = $dbh->prepare('SELECT p.apellidos, p.nombres, p.documento, p.carnet, p.carnet_fmv, p.ficha_ok, p.foto_4x4_ok, p.dni_frente_ok, p.dni_dorso_ok, p.fecha_ticket FROM lista_buena_fe as t join personas as p on t.documento=p.documento WHERE t.nombre_equipo = :equipo and torneo = :torneo and t.marcado_baja is null');
 $sth_lbf->execute([':equipo' => $equipo_torneo[0], ':torneo' => $equipo_torneo[1]]);
-
 
 // incluir header
 require_once 'include/header.php';
@@ -76,7 +78,7 @@ require_once 'include/navbar.php';
         </div>
         <div class="form-group">
             <label for="apel">categoría</label>
-            <input type="text" readonly value="MAXIVOLEY">
+            <input type="text" readonly value="<?=$datos_torneo['categoria']?>">
         </div>
         <div class="form-group">
             <label for="nac">torneo</label>
@@ -154,9 +156,10 @@ require_once 'include/navbar.php';
                 <p>Buscar por DNI. Si la persona no existe en el sistema, completar todos los campos para dar de alta.</p>
                 <form method="POST" action="<?=$_SERVER['PHP_SELF']?>">
                     <div class="card-container">
-                        <div class="form-group">
+                        <div class="form-group selector-container">
                             <label for="dni">dni</label>
                             <input type="text" name="dni" id="dniFiltro" required autofocus>
+                            <select class="sel" id="sel" size="3"></select>
                         </div>
                         <div class="form-group">
                             <label for="nombre">nombre</label>
