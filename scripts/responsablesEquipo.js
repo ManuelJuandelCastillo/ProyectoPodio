@@ -73,8 +73,6 @@ function abrirModal(resp_n) {
     }
 }
 
-
-
 cerrar.addEventListener('click', (e) => {
     modal.style.display = 'none'
     responsable.setAttribute('value', '')

@@ -51,33 +51,6 @@ selector.addEventListener('change', (e)=>{
     })
 })
 
-
-
-// primer filtro
-// dniFiltro.addEventListener("keyup", (e) => {
-//     let buscaDni = dniFiltro.value;
-//     // console.log(buscaDni)
-//     if (buscaDni == '') {
-//         nombreFiltro.value = '';
-//         apellidoFiltro.value = '';
-//     } else {
-//         fetch(`AJAXpersonas.php?dni=${buscaDni}`).then(res => res.json()).then(data => {
-//             allJugadoras = data
-//             // console.log(allJugadoras)
-//             if (allJugadoras.length == 0) {
-//                 nombreFiltro.value = '';
-//                 apellidoFiltro.value = '';
-//             } else {
-//                 for (jugadoras of allJugadoras) {
-//                     // console.log(jugadoras.nombres)
-//                     nombreFiltro.value = jugadoras.nombres;
-//                     apellidoFiltro.value = jugadoras.apellidos;
-//                 }
-//             }
-//         })
-//     }
-// })
-
 const abrirModal = () => {
     modal.style.display = 'block';
 }
