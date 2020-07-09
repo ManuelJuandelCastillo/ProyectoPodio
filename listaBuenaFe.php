@@ -28,6 +28,8 @@ if (!isset($_SESSION['equipo'])) {
         $documento = $_POST['dni'];
         $nombre = strtoupper($_POST['nombre']);
         $apellido = strtoupper($_POST['apellido']);
+        $fecha = $_POST['fecha'];
+        $email = $_POST['email'];
 
         $sth = $dbh->prepare('select * from personas where documento = :doc');
         $sth->execute([':doc' => $documento]);
@@ -35,8 +37,11 @@ if (!isset($_SESSION['equipo'])) {
 
         // si no existe la persona en la DDBB crea el registro
         if (!isset($data['documento'])) {
-            $sth = $dbh->prepare('insert into personas (documento, apellidos, nombres, clave, fecha_alta) values (:doc, :apellido, :nombre,:clave, :alta)');
-            $sth->execute([':doc' => $documento, ':apellido' => $apellido, ':nombre' => $nombre, ':clave'=>md5($documento), ':alta'=>date('Y-m-d')]);
+            $sth = $dbh->prepare('insert into personas (documento, apellidos, nombres, fecha_nacimiento, clave, fecha_alta, correo_electronico) values (:doc, :apellido, :nombre, :fecha, :clave, :alta, :email)');
+            $sth->execute([':doc' => $documento, ':apellido' => $apellido, ':nombre' => $nombre, ':fecha'=>$fecha, ':clave'=>md5($documento), ':alta'=>date('Y-m-d'), ':email'=>$email]);
+        } else {
+            $sth = $dbh->prepare('update personas set apellidos = :apellido, nombres = :nombre, correo_electronico = :email, fecha_nacimiento = :fecha where documento = :dni');
+            $sth->execute([':apellido'=>$apellido, ':nombre'=>$nombre, ':email'=>$email, ':fecha'=>$fecha, ':dni'=>$documento]);
         }
 
         $sth = $dbh->prepare('select documento from lista_buena_fe where torneo = :torneo and nombre_equipo = :equipo');
@@ -138,7 +143,7 @@ require_once 'include/navbar.php';
             }
             ?>
             <a href="lbfpdf.php" target="_blank" rel="noopener noreferrer" class="form-btn btn-agregar-jugadora">imprimir lista</a>
-            <a href="planillaEntrenador.php" class="form-btn btn-agregar-jugadora">generar planilla</a>
+            <a href="planillaEntrenador.php" class="form-btn btn-agregar-jugadora">planilla entrenador</a>
         </div>
     </div>
 
@@ -168,6 +173,14 @@ require_once 'include/navbar.php';
                         <div class="form-group">
                             <label for="apellido">apellido</label>
                             <input type="text" name="apellido" id="apellidoFiltro" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">email</label>
+                            <input type="text" name="email" id="emailFiltro" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="fecha">fecha de nacimiento</label>
+                            <input type="date" name="fecha" id="fechaFiltro" required>
                         </div>
                     </div>
                     <div class="form-btn-container">

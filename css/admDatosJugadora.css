@@ -1,7 +1,21 @@
-
-#dni:focus{
-    border-bottom: var(--violeta) solid 3px;
+.form-input{
+    position: relative;
 }
+.form-input::before{
+    position: absolute;
+    content: '';
+    height: 2px;
+    width: 0;
+    border-radius: 2px;
+    bottom: 7px;
+    background-color: var(--violeta);
+    box-shadow: 0 2px 2px 0 var(--violeta);
+    transition: .2s ease-in-out;
+}
+.form-input:focus-within::before{
+    width: 90%;
+}
+
 .ultimo-carnet{
     text-align: center;
 }

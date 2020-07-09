@@ -5,27 +5,35 @@ if (!isset($_SESSION['tipo_usuario']) || $_SESSION['tipo_usuario'] != 'admin') {
 }
 require_once 'Conexion.php';
 $dbh = new Conexion;
-if (isset($_GET['guardar-admOK'])) {
-    $dni = $_GET['dni'];
+if (isset($_POST['guardar-admOK'])) {
+    $dni = $_POST['dni'];
     $foto4x4 = '';
     $dni_f = '';
     $dni_d = '';
     $ficha = '';
-    if (isset($_GET['foto_4x4']) && $_GET['foto_4x4'] == 'on') {
+    if (isset($_POST['foto_4x4']) && $_POST['foto_4x4'] == 'on') {
         $foto4x4 = 'OK';
+        $sth = $dbh->prepare('update personas_imagenes set estado = 1 where documento = :dni and tipo_imagen = :tipo');
+        $sth->execute([':dni'=>$dni, ':tipo'=>'foto']);
     }
-    if (isset($_GET['dni_f']) && $_GET['dni_f'] == 'on') {
+    if (isset($_POST['dni_f']) && $_POST['dni_f'] == 'on') {
         $dni_f = 'OK';
+        $sth = $dbh->prepare('update personas_imagenes set estado = 1 where documento = :dni and tipo_imagen = :tipo');
+        $sth->execute([':dni'=>$dni, ':tipo'=>'dni_f']);
     }
-    if (isset($_GET['dni_d']) && $_GET['dni_d'] == 'on') {
+    if (isset($_POST['dni_d']) && $_POST['dni_d'] == 'on') {
         $dni_d = 'OK';
+        $sth = $dbh->prepare('update personas_imagenes set estado = 1 where documento = :dni and tipo_imagen = :tipo');
+        $sth->execute([':dni'=>$dni, ':tipo'=>'dni_d']);
     }
-    if (isset($_GET['ficha_ok']) && $_GET['ficha_ok'] == 'on') {
+    if (isset($_POST['ficha_ok']) && $_POST['ficha_ok'] == 'on') {
         $ficha = 'OK';
     }
 
-    $sth = $dbh->prepare('update personas set ficha_ok = :ficha, foto_4x4_ok = :foto, dni_frente_ok = :dni_f, dni_dorso_ok = :dni_d, carnet = :podio, carnet_fmv = :fmv where documento = :dni');
-    $sth->execute([':ficha' => $ficha, ':foto' => $foto4x4, ':dni_f' => $dni_f, ':dni_d' => $dni_d, ':dni' => $dni, ':podio'=>$_GET['carnet-podio'], ':fmv'=>$_GET['carnet-fmv']]);
+    $sth = $dbh->prepare('update personas set apellidos = :apellido, nombres = :nombre, fecha_nacimiento = :fecha, correo_electronico = :email, ficha_ok = :ficha, foto_4x4_ok = :foto, dni_frente_ok = :dni_f, dni_dorso_ok = :dni_d, carnet = :podio, carnet_fmv = :fmv, fecha_ticket = :ticket where documento = :dni');
+    $sth->execute([':apellido'=>strtoupper($_POST['apellido']), ':nombre'=>strtoupper($_POST['nombre']), ':fecha'=>$_POST['fecha'], ':email'=>$_POST['email'], ':ficha' => $ficha, ':foto' => $foto4x4, ':dni_f' => $dni_f, ':dni_d' => $dni_d, ':dni' => $dni, ':podio'=>$_POST['carnet-podio'], ':fmv'=>$_POST['carnet-fmv'], ':ticket'=>$_POST['ticket']]);
+
+    $_GET['dni'] = $dni; // para que vuelva a cargar los datos de la jugadora.
 }
 
 if (isset($_GET['dni'])) {
@@ -69,7 +77,9 @@ require_once 'include/navbar.php';
     <form action="<?= $_SERVER['PHP_SELF'] ?>" method="GET" class="form-selector">
         <div class="card-container">
             <label for="dni">buscar por DNI:</label>
-            <input type="text" name="dni" id="dni" autofocus required <?php if(isset($campo_data['documento'])){?>value="<?=$campo_data['documento']?>" <?php } ?>>
+                <div class="form-input">
+                    <input type="text" name="dni" id="dni" autofocus required <?php if(isset($campo_data['documento'])){?>value="<?=$campo_data['documento']?>" <?php } ?>>
+                </div>
             <button type="submit" class="form-btn">ver info jugadora</button>
         </div>
     </form>
@@ -80,18 +90,19 @@ if (isset($campo_data['documento'])) {
 ?>
     <section class="main-container">
         <h2>Datos personales</h2>
+        <form action="<?= $_SERVER['PHP_SELF'] ?>" method="POST">
         <div class="card-container">
-            <div class="form-group">
+            <div class="form-group form-input">
                 <label for="name">Nombre</label>
-                <input type="text" readonly value="<?= $campo_data['nombres'] ?>">
+                <input type="text" name="nombre" value="<?= $campo_data['nombres'] ?>">
             </div>
-            <div class="form-group">
+            <div class="form-group form-input">
                 <label for="apel">Apellido</label>
-                <input type="text" readonly value="<?= $campo_data['apellidos'] ?>">
+                <input type="text" name="apellido" value="<?= $campo_data['apellidos'] ?>">
             </div>
-            <div class="form-group">
+            <div class="form-group form-input">
                 <label for="nac">Fecha de nacimiento</label>
-                <input type="date" readonly value="<?= $campo_data['fecha_nacimiento'] ?>">
+                <input type="date" name="fecha" value="<?= $campo_data['fecha_nacimiento'] ?>">
             </div>
         </div>
         <p class="form-section-title">telefonos</p>
@@ -111,9 +122,9 @@ if (isset($campo_data['documento'])) {
         </div>
         <p class="form-section-title">datos de contacto</p>
         <div class="card-container">
-            <div class="form-group">
+            <div class="form-group form-input">
                 <label for="email">E-mail</label>
-                <input type="email" readonly value="<?= $campo_data['correo_electronico'] ?>">
+                <input type="email" name="email" value="<?= $campo_data['correo_electronico'] ?>">
             </div>
             <div class="form-group">
                 <label for="direccion">Dirección</label>
@@ -127,7 +138,6 @@ if (isset($campo_data['documento'])) {
     </section>
 
     <section class="main-container">
-    <form action="<?= $_SERVER['PHP_SELF'] ?>" method="GET">
         <h2>ficha y carnets</h2>
         <div class="card-container">
             <div class="form-group">
@@ -138,13 +148,17 @@ if (isset($campo_data['documento'])) {
                                                                             } ?>>
                 </div>
             </div>
-            <div class="form-group">
+            <div class="form-group form-input">
                 <label for="carnet-podio">carnet PODIO</label>
                 <input type="text" name="carnet-podio" id="carnet-podio" value="<?=$campo_data['carnet']?>">
             </div>
-            <div class="form-group">
+            <div class="form-group form-input">
                 <label for="carnet-fmv">carnet FMV</label>
                 <input type="text" name="carnet-fmv" id="carnet-fmv" value="<?=$campo_data['carnet_fmv']?>">
+            </div>
+            <div class="form-group form-input">
+                <label for="ticket">Fecha ticket</label>
+                <input type="date" name="ticket" value="<?= $campo_data['fecha_ticket'] ?>">
             </div>
         </div>
         <input type="text" class="ultimo-carnet" value="Ultimo carnet PODIO: <?=$ultimo_carnet['max(carnet)']?>" readonly>

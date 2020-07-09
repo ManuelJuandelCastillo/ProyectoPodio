@@ -9,7 +9,7 @@ if (!isset($_SESSION['equipo'])) {
     $dbh = new Conexion;
 
     // codigo que trae los datos de equipo y jugadoras
-    $sth_lbf = $dbh->prepare('SELECT p.apellidos, p.nombres, p.documento, p.carnet, p.carnet_fmv, p.ficha_ok, p.foto_4x4_ok, p.dni_frente_ok, p.dni_dorso_ok FROM lista_buena_fe as t join personas as p on t.documento=p.documento WHERE t.nombre_equipo = :equipo and torneo = :torneo and t.marcado_baja is null');
+    $sth_lbf = $dbh->prepare('SELECT p.apellidos, p.nombres, p.documento, p.carnet, p.carnet_fmv, p.ficha_ok, p.foto_4x4_ok, p.dni_frente_ok, p.dni_dorso_ok, p.fecha_ticket FROM lista_buena_fe as t join personas as p on t.documento=p.documento WHERE t.nombre_equipo = :equipo and torneo = :torneo and t.marcado_baja is null');
     $sth_lbf->execute([':equipo' => $equipo, ':torneo' => $torneo]);
 
     // creacion de pdf
@@ -53,8 +53,8 @@ if (!isset($_SESSION['equipo'])) {
     $pdf->Ln(20);
 
     // lbf cabeceras de tabla y ancho de colunas
-    $cabeceras = ['DNI', 'Apellido, Nombre (C. PODIO - C. fmv)', 'ficha', 'foto', 'dni f', 'dni d'];
-    $columnas = [28, 90, 17, 17, 17, 17];
+    $cabeceras = ['DNI', 'Apellido, Nombre (C. PODIO - C. fmv)', 'ficha', 'foto', 'dni f', 'dni d', 'ticket'];
+    $columnas = [26, 90, 14, 14, 14, 14, 14];
 
     $pdf->SetFont('', 'B', 10);
 
@@ -71,6 +71,9 @@ if (!isset($_SESSION['equipo'])) {
         $pdf->Cell($columnas[3], 8, $jugadora['foto_4x4_ok'], 1, 0, 'C');
         $pdf->Cell($columnas[4], 8, $jugadora['dni_frente_ok'], 1, 0, 'C');
         $pdf->Cell($columnas[5], 8, $jugadora['dni_dorso_ok'], 1, 0, 'C');
+        $ticket = '';
+        if ($jugadora['fecha_ticket']!=null){$ticket = 'OK';}
+        $pdf->Cell($columnas[5], 8, $ticket, 1, 0, 'C');
         $pdf->Ln();
     }
     $pdf->Output();

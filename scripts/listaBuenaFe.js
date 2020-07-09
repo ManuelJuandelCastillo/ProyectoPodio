@@ -12,6 +12,8 @@ const modal = document.getElementById('modal-container');
 const dniFiltro = document.getElementById('dniFiltro');
 const nombreFiltro = document.getElementById('nombreFiltro');
 const apellidoFiltro = document.getElementById('apellidoFiltro');
+const emailFiltro = document.getElementById('emailFiltro');
+const fechaFiltro = document.getElementById('fechaFiltro');
 const selector = document.getElementById('sel'); 
 
 // nuevo lista fiiltro
@@ -47,6 +49,8 @@ selector.addEventListener('change', (e)=>{
         dniFiltro.value = datos[0].documento;
         nombreFiltro.value = datos[0].nombres;
         apellidoFiltro.value = datos[0].apellidos;
+        emailFiltro.value = datos[0].correo_electronico;
+        fechaFiltro.value = datos[0].fecha_nacimiento;
         selector.style.display = 'none';
     })
 })

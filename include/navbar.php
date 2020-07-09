@@ -36,8 +36,10 @@
                 <?php
                 } else {
                 ?>
-                <li><a class="links" href="admIndex.php">ver por equipo</a></li>
-                <li><a class="links" href="admDatosJugadora.php">ver por documento</a></li>
+                <li><a class="links" href="admTorneos.php">torneos</a></li>
+                <li><a class="links" href="admIndex.php">equipos</a></li>
+                <li><a class="links" href="admDatosJugadora.php">personas</a></li>
+                <li><a class="links" href="admIndex.php">ver modificaciones</a></li>
                 <?php
                 }
                 ?>

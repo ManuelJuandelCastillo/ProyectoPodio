@@ -26,7 +26,7 @@ if (!isset($_SESSION['dni'])){
          $registro = $sth->fetch(PDO::FETCH_ASSOC);
 
          if ($registro['tipo_imagen'] == $tipo){
-             $sth = $dbh->prepare('update personas_imagenes set imagen=:imagen, formato = :formato where documento=:dni and tipo_imagen=:tipo');
+             $sth = $dbh->prepare('update personas_imagenes set imagen=:imagen, formato = :formato, estado = 0 where documento=:dni and tipo_imagen=:tipo');
              $sth->execute([':imagen'=> $img_blob, ':dni'=>$dni, ':tipo'=>$tipo, ':formato'=>$formato]);
              
             switch ($registro['tipo_imagen']) {
@@ -44,9 +44,9 @@ if (!isset($_SESSION['dni'])){
 
              $sth = $dbh->prepare('update personas set');
          }else{
-             $sth = $dbh->prepare('insert into personas_imagenes(documento, tipo_imagen, imagen, formato) values(:dni, :tipo, :img, :formato)');
+             $sth = $dbh->prepare('insert into personas_imagenes(documento, tipo_imagen, imagen, formato, estado) values(:dni, :tipo, :img, :formato, 0)');
              $sth->execute([':dni' => $dni, ':tipo' => $tipo, ':img' => $img_blob, ':formato' => $formato]);
-             echo 'alta ' . $registro['tipo_imagen'];
+            //  echo 'alta ' . $registro['tipo_imagen'];
          }
     }
     header('location:index.php');

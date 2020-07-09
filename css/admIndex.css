@@ -1,4 +1,10 @@
 /* ********************************************** */
+.links-nuevos-equipos{
+    background-color: white;
+    border-bottom: var(--gris-2) solid 1px;
+    padding: 0 0 10px 0;
+}
+
 /* selector equipo */
 .selector-equipo-container{
     padding: 0 0 10px 0;
@@ -13,8 +19,8 @@
 }
 
 .selector-equipo{
-    min-width: 300px;
-    width: 400px;
+    margin: 20px 0;
+    width: 290px;
     background-color: var(--color-fondos);
     color: var(--color-nav);
     border: var(--gris-medio) solid 1px;
@@ -31,7 +37,12 @@
 .main-container{
     padding-bottom: 0;
 }
-
+.group-links-equipo{
+    margin-bottom: 0;
+}
+.group-links{
+    justify-content: space-around;
+}
 /* sector preferencias */
 h3{
     text-transform: capitalize;
@@ -44,6 +55,7 @@ h3{
     text-align: center;
 }
 .preferencias-group{
+    border: var(--gris-2) solid 3px;
     background-color: var(--color-fondos);
     border-radius: 4px;
 }
@@ -65,7 +77,7 @@ tr{
     transition: 0.3s;
 }
 tbody tr:hover{
-    background-color: var(--azul);
+    background-color: var(--violeta);
     color: var(--color-card);
 }
 th{
@@ -76,7 +88,22 @@ th{
 td{
     padding: 10px 5px;
 }
+a{
+    text-decoration: none;
+    transition: 0.2s;
+}
+a:hover{
+    color: white;
+}
 .col-dni, .col-carnet, th{
     font-size: 14px;
     text-align: center;
+}
+.confirmar-baja{
+    text-transform: uppercase;
+    color: orangered;
+}
+.confirmar-baja:hover{
+    font-weight: 700;
+    color: red;
 }

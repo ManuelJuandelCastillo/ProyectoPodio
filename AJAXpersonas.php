@@ -7,7 +7,7 @@ if (!isset($_SESSION['tipo_usuario']) || !isset($_GET['dni'])){
 $dni = $_GET['dni'].'%';
 require_once 'Conexion.php';
 $dbh = new Conexion;
-$sth = $dbh->prepare('select documento, apellidos, nombres, correo_electronico from personas where documento like :dni');
+$sth = $dbh->prepare('select documento, apellidos, nombres, correo_electronico, fecha_nacimiento from personas where documento like :dni');
 $sth->execute([':dni'=>$dni]);
 $lista = $sth->fetchAll(PDO::FETCH_ASSOC);
 
