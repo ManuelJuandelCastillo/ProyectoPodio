@@ -52,7 +52,7 @@ require_once 'include/navbar.php';
             <a class="form-btn" href="admManagerEquipos.php">+ nuevo equipo</a>
         </div>
         <div class="group-links">
-            <a class="form-btn" href="#">importar equipos</a>
+            <a class="form-btn" href="admImportarEquipos.php">importar equipos</a>
         </div>
     </div>
     <form method="POST" action="<?= $_SERVER['PHP_SELF'] ?>" class="form-selector">
@@ -89,10 +89,10 @@ require_once 'include/navbar.php';
         </div>
         <div class="card-container group-links-equipo">
             <div class="group-links">
-                <a class="form-btn" href="#">Modificar información</a>
+                <a class="form-btn" href="admManagerEquipos.php?equipo=<?=$dataEquipo['nombre_equipo'] ?>">Modificar información</a>
             </div>
             <div class="group-links">
-                <a class="form-btn" href="#">eliminar del torneo</a>
+                <a class="form-btn" href="admEliminarEquipo.php?torneo=<?=$torneo['torneo'] ?>&equipo=<?=$dataEquipo['nombre_equipo'] ?>">eliminar del torneo</a>
             </div>
         </div>
     <?php } ?>
