@@ -1,3 +1,16 @@
+.btn-container{
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.btn-jugadora{
+    margin-top: 20px;
+}
+
+.input-oculto{
+    display: none;
+}
+
 .form-input{
     position: relative;
 }
@@ -64,5 +77,12 @@
     }
     .img-card span{
         margin: 10px;
+    }
+
+    .btn-descargar{
+        margin: 10px 0;
+    }
+    .btn-subir{
+        margin-bottom: 20px;
     }
     /* fin seccion imagenes */
