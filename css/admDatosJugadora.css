@@ -14,6 +14,11 @@
 .form-input{
     position: relative;
 }
+.selector-jugadora{
+    position: absolute;
+    top: 25px;
+    display: none;
+}
 .form-input::before{
     position: absolute;
     content: '';

@@ -14,6 +14,10 @@ if (isset($_POST['guardar-admOK'])) {
     $dni_d = '';
     $ficha = '';
 
+    if($_POST['ticket']=='' or $_POST['ticket'] == '0001-01-01'){
+        $_POST['ticket'] = null;
+    }
+
     if (isset($_POST['foto_4x4']) && $_POST['foto_4x4'] == 'on') {
         $foto4x4 = 'OK';
         $sth = $dbh->prepare('update personas_imagenes set estado = 1 where documento = :dni and tipo_imagen = :tipo');
@@ -114,12 +118,14 @@ require_once 'include/navbar.php';
 <section class="main-container">
     <div class="btn-container btn-jugadora">
         <a href="admAgregarJugadora.php" class="form-btn">+ jugadora</a>
+        <a href="admUltimasMod.php" class="form-btn">modificaciones por fecha</a>
     </div>
     <form action="<?= $_SERVER['PHP_SELF'] ?>" method="GET" class="form-selector">
         <div class="card-container">
             <label for="dni">buscar por DNI:</label>
             <div class="form-input">
                 <input type="text" name="dni" id="dni" autofocus required <?php if (isset($campo_data['documento'])) { ?>value="<?= $campo_data['documento'] ?>" <?php } ?>>
+                <select class="selector-jugadora" id="selector-jugadora" size="3"></select>
             </div>
             <button type="submit" class="form-btn">ver info jugadora</button>
         </div>

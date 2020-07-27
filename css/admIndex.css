@@ -1,4 +1,12 @@
 /* ********************************************** */
+.input-oculto{
+    display: none;
+}
+.selector-torneo-container{
+    border-bottom: var(--gris-2) solid 1px;
+    padding: 0 0 10px 0;
+}
+
 .links-nuevos-equipos{
     background-color: white;
     border-bottom: var(--gris-2) solid 1px;

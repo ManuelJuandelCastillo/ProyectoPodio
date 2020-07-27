@@ -8,12 +8,21 @@ if (!isset($_SESSION['tipo_usuario'])) {
 // traer equipos del ultimo torneo
 require_once 'Conexion.php';
 $dbh = new Conexion;
-$sth = $dbh->prepare("SELECT `torneo` FROM `torneos` ORDER BY id DESC LIMIT 1");
+$sth = $dbh->prepare("SELECT `torneo` FROM `torneos` ORDER BY id DESC");
 $sth->execute();
-$torneo = $sth->fetch(PDO::FETCH_ASSOC);
-$sth = $dbh->prepare("select nombre_equipo from equipos where torneo = :torneo");
-$sth->execute([':torneo' => $torneo['torneo']]);
-$equipos = $sth->fetchAll(PDO::FETCH_ASSOC);
+$torneos = $sth->fetchAll(PDO::FETCH_ASSOC);
+
+if (!isset($_POST['selector-torneo'])) {
+    $sth = $dbh->prepare("select nombre_equipo from equipos where torneo = :torneo");
+    $sth->execute([':torneo' => $torneos[0]['torneo']]);
+    $equipos = $sth->fetchAll(PDO::FETCH_ASSOC);
+    $torneoElegido = $torneos[0]['torneo'];
+} else {
+    $sth = $dbh->prepare('select nombre_equipo from equipos where torneo = :torneo');
+    $sth->execute([':torneo' => $_POST['torneo-elegido']]);
+    $equipos = $sth->fetchAll(PDO::FETCH_ASSOC);
+    $torneoElegido = $_POST['torneo-elegido'];
+}
 
 if (isset($_GET['equipo'])) {
     $_POST['listar-equipo'] = '';
@@ -21,18 +30,19 @@ if (isset($_GET['equipo'])) {
 }
 // si se presiona el boton de listar equipo o viene de confirmar baja
 if (isset($_POST['listar-equipo'])) {
+    $torneoElegido = $_POST['torneoElegido'];
     $sth = $dbh->prepare('select * from equipos where torneo = :torneo and nombre_equipo = :equipo');
-    $sth->execute([':torneo' => $torneo['torneo'], ':equipo' => $_POST['selector-equipo']]);
+    $sth->execute([':torneo' => $torneoElegido, ':equipo' => $_POST['selector-equipo']]);
     $dataEquipo = $sth->fetch(PDO::FETCH_ASSOC);
 
     // traer preferencias hora cancha
     $sth = $dbh->prepare('select * from preferencias_horarias where torneo = :torneo and equipo = :equipo');
-    $sth->execute([':torneo' => $torneo['torneo'], ':equipo' => $_POST['selector-equipo']]);
+    $sth->execute([':torneo' => $torneoElegido, ':equipo' => $_POST['selector-equipo']]);
     $preferencias = $sth->fetch(PDO::FETCH_ASSOC);
 
     // traer datos de jugadoras de la lista
     $sth_lbf = $dbh->prepare('SELECT p.apellidos, p.nombres, p.documento, p.carnet, p.carnet_fmv, p.ficha_ok, p.foto_4x4_ok, p.dni_frente_ok, p.dni_dorso_ok, p.fecha_ticket, t.marcado_baja FROM lista_buena_fe as t join personas as p on t.documento=p.documento WHERE t.nombre_equipo = :equipo and torneo = :torneo');
-    $sth_lbf->execute([':equipo' => $_POST['selector-equipo'], ':torneo' => $torneo['torneo']]);
+    $sth_lbf->execute([':equipo' => $_POST['selector-equipo'], ':torneo' => $torneoElegido]);
 }
 
 // incluir cabeceras
@@ -44,9 +54,30 @@ require_once 'include/header.php';
 require_once 'include/navbar.php';
 ?>
 
-<!-- inicio selector de equipo -->
+<!-- selector de torneo -->
 <section class="main-container selector-equipo-container">
-    <h2 id="torneo-js"><?= $torneo['torneo'] ?></h2>
+    <h2>equipos por torneo</h2>
+    <div class="card-container selector-torneo-container">
+        <form method="POST" action="<?= $_SERVER['PHP_SELF'] ?>" class="form-selector">
+            <select name="torneo-elegido" class="selector-equipo">
+                <?php
+                foreach ($torneos as $torneo) {
+                ?>
+                    <option value="<?= $torneo['torneo'] ?>" <?php
+                                                                if (isset($torneoElegido)) {
+                                                                    if ($torneo['torneo'] == $torneoElegido) {
+                                                                        echo 'selected';
+                                                                    }
+                                                                }
+                                                                ?>><?= $torneo['torneo'] ?></option>
+                <?php
+                }
+                ?>
+            </select>
+            <button type="submit" name="selector-torneo" class="form-btn">ver equipos</button>
+        </form>
+    </div>
+
     <div class="card-container group-links-equipo links-nuevos-equipos">
         <div class="group-links">
             <a class="form-btn" href="admManagerEquipos.php">+ nuevo equipo</a>
@@ -56,6 +87,7 @@ require_once 'include/navbar.php';
         </div>
     </div>
     <form method="POST" action="<?= $_SERVER['PHP_SELF'] ?>" class="form-selector">
+        <input type="text" class="input-oculto" name="torneoElegido" value="<?= $torneoElegido ?>" readonly>
         <select name="selector-equipo" class="selector-equipo" id="selector-equipo" required>
             <?php foreach ($equipos as $equipo) { ?>
                 <option value="<?= $equipo['nombre_equipo'] ?>" <?php
@@ -89,10 +121,10 @@ require_once 'include/navbar.php';
         </div>
         <div class="card-container group-links-equipo">
             <div class="group-links">
-                <a class="form-btn" href="admManagerEquipos.php?equipo=<?=$dataEquipo['nombre_equipo'] ?>">Modificar información</a>
+                <a class="form-btn" href="admManagerEquipos.php?equipo=<?= $dataEquipo['nombre_equipo'] ?>">Modificar información</a>
             </div>
             <div class="group-links">
-                <a class="form-btn" href="admEliminarEquipo.php?torneo=<?=$torneo['torneo'] ?>&equipo=<?=$dataEquipo['nombre_equipo'] ?>">eliminar del torneo</a>
+                <a class="form-btn" href="admEliminarEquipo.php?torneo=<?= $torneo['torneo'] ?>&equipo=<?= $dataEquipo['nombre_equipo'] ?>">eliminar del torneo</a>
             </div>
         </div>
     <?php } ?>
@@ -180,7 +212,7 @@ require_once 'include/navbar.php';
                         <td class="col-carnet"><?= $jugadora['carnet'] ?></td>
                         <td class="col-name"><?= $jugadora['apellidos'] ?>, <?= $jugadora['nombres'] ?> <?= $faltantes ?>
                             <?php if ($jugadora['marcado_baja'] != null) { ?>
-                                <a href="admConfirmarBaja.php?torneo=<?=$torneo['torneo']?>&equipo=<?= $dataEquipo['nombre_equipo'] ?>&dni=<?= $jugadora['documento'] ?>" class="confirmar-baja">Confirmar baja</a>
+                                <a href="admConfirmarBaja.php?torneo=<?= $torneo['torneo'] ?>&equipo=<?= $dataEquipo['nombre_equipo'] ?>&dni=<?= $jugadora['documento'] ?>" class="confirmar-baja">Confirmar baja</a>
                             <?php } ?></td>
                         <td class="col-link"><a href="admDatosJugadora.php?dni=<?= $jugadora['documento'] ?>" target="_blank" rel="noopener noreferrer">ver</a></td>
                     </tr>
@@ -191,7 +223,9 @@ require_once 'include/navbar.php';
             </tbody>
         </table>
     </section>
-<?php } ?>
+<?php
+    // cierre del if
+} ?>
 
 <?php
 // incluir js de navbar y cierre de etiquetas
