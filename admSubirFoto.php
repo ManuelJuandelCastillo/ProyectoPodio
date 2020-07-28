@@ -17,15 +17,27 @@ if (isset($_POST['subir-foto'])) {
 
     require_once 'Conexion.php';
     $dbh = new Conexion;
-    $sth = $dbh->prepare('update personas_imagenes set imagen = :imagen, formato = :formato where documento=:dni and tipo_imagen=:tipo');
-    $sth->execute([':imagen'=>$img_blob, ':formato'=>$formato, ':dni'=>$dni, ':tipo'=>$tipoImagen]);
+
+    $sth = $dbh->prepare('select * from personas_imagenes where documento=:dni and tipo:imagen=:tipo');
+    $sth->execute([':dni' => $dni, ':tipo' => $tipoImagen]);
+    $dataImagen = $sth->fetch(PDO::FETCH_ASSOC);
+
+    if ($dataImagen != '') {
+        $sth = $dbh->prepare('update personas_imagenes set imagen = :imagen, formato = :formato where documento=:dni and tipo_imagen=:tipo, estado = 0');
+        $sth->execute([':imagen' => $img_blob, ':formato' => $formato, ':dni' => $dni, ':tipo' => $tipoImagen]);
+    } else {
+        $sth = $dbh->prepare('insert into personas_imagenes (documento, tipo_imagen, imagen, formato, estado) values (:dni, :tipo, :imagen, :formato, :estado)');
+        $sth->execute([':dni'=>$dni, ':tipo'=>$tipoImagen, ':imagen'=>$img_blob, ':formato'=>$formato, ':estado'=>0]);
+    }
 
     header("location:admDatosJugadora.php?dni=$dni");
 }
 
 // se llega a la pagina desde admDatosJugadora
-$dni = $_GET['dni'];
-$tipoImagen = $_GET['tipo-imagen'];
+if (isset($_GET['dni'])) {
+    $dni = $_GET['dni'];
+    $tipoImagen = $_GET['tipo-imagen'];
+}
 
 require_once 'include/header.php';
 ?>

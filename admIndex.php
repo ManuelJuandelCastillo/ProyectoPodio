@@ -5,7 +5,7 @@ if (!isset($_SESSION['tipo_usuario'])) {
 } else if ($_SESSION['tipo_usuario'] != 'admin') {
     header('location:index.php');
 }
-// traer equipos del ultimo torneo
+// traer torneos
 require_once 'Conexion.php';
 $dbh = new Conexion;
 $sth = $dbh->prepare("SELECT `torneo` FROM `torneos` ORDER BY id DESC");
@@ -13,11 +13,14 @@ $sth->execute();
 $torneos = $sth->fetchAll(PDO::FETCH_ASSOC);
 
 if (!isset($_POST['selector-torneo'])) {
+
     $sth = $dbh->prepare("select nombre_equipo from equipos where torneo = :torneo");
     $sth->execute([':torneo' => $torneos[0]['torneo']]);
     $equipos = $sth->fetchAll(PDO::FETCH_ASSOC);
     $torneoElegido = $torneos[0]['torneo'];
+    
 } else {
+
     $sth = $dbh->prepare('select nombre_equipo from equipos where torneo = :torneo');
     $sth->execute([':torneo' => $_POST['torneo-elegido']]);
     $equipos = $sth->fetchAll(PDO::FETCH_ASSOC);
@@ -27,10 +30,11 @@ if (!isset($_POST['selector-torneo'])) {
 if (isset($_GET['equipo'])) {
     $_POST['listar-equipo'] = '';
     $_POST['selector-equipo'] = $_GET['equipo'];
+    $torneoElegido = $_GET['torneo'];
 }
 // si se presiona el boton de listar equipo o viene de confirmar baja
 if (isset($_POST['listar-equipo'])) {
-    $torneoElegido = $_POST['torneoElegido'];
+
     $sth = $dbh->prepare('select * from equipos where torneo = :torneo and nombre_equipo = :equipo');
     $sth->execute([':torneo' => $torneoElegido, ':equipo' => $_POST['selector-equipo']]);
     $dataEquipo = $sth->fetch(PDO::FETCH_ASSOC);
@@ -212,9 +216,10 @@ require_once 'include/navbar.php';
                         <td class="col-carnet"><?= $jugadora['carnet'] ?></td>
                         <td class="col-name"><?= $jugadora['apellidos'] ?>, <?= $jugadora['nombres'] ?> <?= $faltantes ?>
                             <?php if ($jugadora['marcado_baja'] != null) { ?>
-                                <a href="admConfirmarBaja.php?torneo=<?= $torneo['torneo'] ?>&equipo=<?= $dataEquipo['nombre_equipo'] ?>&dni=<?= $jugadora['documento'] ?>" class="confirmar-baja">Confirmar baja</a>
+                                <a href="admConfirmarBaja.php?torneo=<?= $torneoElegido ?>&equipo=<?= $dataEquipo['nombre_equipo'] ?>&dni=<?= $jugadora['documento'] ?>" class="confirmar-baja">Confirmar baja</a>
                             <?php } ?></td>
                         <td class="col-link"><a href="admDatosJugadora.php?dni=<?= $jugadora['documento'] ?>" target="_blank" rel="noopener noreferrer">ver</a></td>
+                        <td><a href="admConfirmarBaja.php?torneo=<?= $torneoElegido ?>&equipo=<?= $dataEquipo['nombre_equipo'] ?>&dni=<?= $jugadora['documento'] ?>">eliminar</a></td>
                     </tr>
                 <?php
                 }

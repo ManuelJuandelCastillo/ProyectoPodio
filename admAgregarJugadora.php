@@ -13,9 +13,10 @@ if(isset($_POST['nueva-jugadora'])){
     $nombre = $_POST['nombre'];
     $fecha = $_POST['fecha'];
     $email = $_POST['email'];
+    $pass = md5($dni);
 
-   $sth = $dbh->prepare('insert into personas (documento, apellidos, nombres, fecha_nacimiento, correo_electronico) values (:dni, :apellido, :nombre, :fecha, :email)');
-   $sth->execute([':dni'=>$dni, ':apellido'=>$apellido, ':nombre'=>$nombre, ':fecha'=>$fecha, ':email'=>$email]);
+   $sth = $dbh->prepare('insert into personas (documento, apellidos, nombres, fecha_nacimiento, correo_electronico, clave, fecha_alta) values (:dni, :apellido, :nombre, :fecha, :email, :pass, :alta)');
+   $sth->execute([':dni'=>$dni, ':apellido'=>$apellido, ':nombre'=>$nombre, ':fecha'=>$fecha, ':email'=>$email, ':pass'=>$pass, ':alta'=>date('Y-m-d')]);
 
    header("location:admDatosJugadora.php?dni=$dni");
 }

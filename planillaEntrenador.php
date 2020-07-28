@@ -74,6 +74,7 @@ require_once 'include/navbar.php';
                         </td>
                         <td class="columna-nro">
                             <select class="select-numero" name="numero-jugadora<?=$i?>">
+                            <option value=""></option>
                                 <?php
                                     for ($j=0; $j < 100; $j++) { 
                                 ?>

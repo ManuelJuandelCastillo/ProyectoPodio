@@ -47,3 +47,13 @@ p{
     width: 90%;
 }
 #responsable{display: none;}
+.selector-container{
+    position: relative;
+}
+.sel{
+    position: absolute;
+    display: none;
+    z-index: 1;
+    max-width: 80%;
+    min-height: 30px;
+}

@@ -11,6 +11,8 @@ if (!isset($_SESSION['equipo'])) {
         $documento = $_POST['dni'];
         $nombre = strtoupper($_POST['nombre']);
         $apellido = strtoupper($_POST['apellido']);
+        $email = $_POST['email'];
+        $fechaNac = $_POST['fecha'];
         $resp = $_POST['responsable'];
 
         $sth = $dbh->prepare('select * from personas where documento = :doc');
@@ -18,8 +20,8 @@ if (!isset($_SESSION['equipo'])) {
         $data = $sth->fetch(PDO::FETCH_ASSOC);
 
         if (!isset($data['documento'])) {
-            $sth = $dbh->prepare('insert into personas (documento, nombres, apellidos, clave, fecha_alta) values (:doc, :nombre, :apellido, :clave, :alta)');
-            $sth->execute([':doc' => $documento, ':nombre' => $nombre, ':apellido' => $apellido, ':clave'=>md5($documento), ':alta'=>date('Y-m-d')]);
+            $sth = $dbh->prepare('insert into personas (documento, nombres, apellidos, correo_electronico, fecha_nacimiento, clave, fecha_alta) values (:doc, :nombre, :apellido, :email, :fecha, :clave, :alta)');
+            $sth->execute([':doc' => $documento, ':nombre' => $nombre, ':apellido' => $apellido, ':email'=>$email, ':fecha'=>$fechaNac, ':clave'=>md5($documento), ':alta'=>date('Y-m-d')]);
         }
 
         switch ($resp) {

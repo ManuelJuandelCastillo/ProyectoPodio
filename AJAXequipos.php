@@ -9,7 +9,7 @@ $torneo = $_GET['torneo'];
 require_once 'Conexion.php';
 $dbh = new Conexion;
 
-$sth = $dbh->prepare('select * from equipos where torneo = :torneo');
+$sth = $dbh->prepare('select * from equipos where torneo = :torneo order by nombre_equipo');
 $sth->execute([':torneo'=>$torneo]);
 
 $equipos = $sth->fetchAll(PDO::FETCH_ASSOC);

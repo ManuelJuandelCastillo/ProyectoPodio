@@ -200,9 +200,10 @@ require_once 'include/navbar.php';
                 <p>Buscar por DNI. Si la persona no existe en el sistema, completar todos los campos para dar de alta.</p>
                 <form method="POST" action="responsableManager.php">
                     <div class="card-container">
-                        <div class="form-group">
+                        <div class="form-group selector-container">
                             <label for="dni">dni</label>
                             <input type="text" name="dni" id="dniFiltro" required autofocus>
+                            <select class="sel" id="sel" size="3"></select>
                         </div>
                         <div class="form-group">
                             <label for="nombre">nombre</label>
@@ -211,6 +212,14 @@ require_once 'include/navbar.php';
                         <div class="form-group">
                             <label for="apellido">apellido</label>
                             <input type="text" name="apellido" id="apellidoFiltro" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">email</label>
+                            <input type="text" name="email" id="emailFiltro" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="fecha">fecha de nacimiento</label>
+                            <input type="date" name="fecha" id="fechaFiltro" required>
                         </div>
                         <input type="text" name="responsable" id="responsable" readonly>
                     </div>

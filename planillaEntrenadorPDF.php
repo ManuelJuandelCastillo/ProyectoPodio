@@ -4,170 +4,282 @@ if (!isset($_POST['imprimir-planilla'])) {
     header('location:areaResponsables.php');
 }
 
-require_once 'Conexion.php';
-$dbh = new Conexion;
 
-require_once 'fpdf/fpdf.php';
-$pdf = new FPDF();
-$pdf->AddPage();
-$pdf->SetFont('Arial', 'B', 20);
 
-$pdf->SetTextColor(64, 64, 64);
-$pdf->SetDrawColor(100, 100, 100);
-$pdf->SetFillColor(225, 225, 225);
-
-$pdf->Cell(186, 8, 'PLANILLA DE ENTRENADOR', 0, 0, 'C');
-$pdf->Ln();
-
-$pdf->SetFont('Arial', 'B', 9);
-$pdf->Cell(60, 10, 'FORMACION DEL EQUIPO', 1, 0, 'C', true);
-$pdf->Cell(102, 10, $_SESSION['equipo'][0], 1, 0, 'C');
-$pdf->Cell(12, 10, 'A', 1, 0, 'C');
-$pdf->Cell(12, 10, 'B', 1, 0, 'C');
-$pdf->Ln();
-$pdf->Cell(30, 10, 'EQUIPO "A"', 1, 0, 'C', true);
-$pdf->Cell(63, 10, '', 1, 0);
-$pdf->Cell(30, 10, 'EQUIPO "B"', 1, 0, 'C', true);
-$pdf->Cell(63, 10, '', 1, 0);
-$pdf->Ln();
-$pdf->Cell(30, 10, 'FECHA', 1, 0, 'C', true);
-$pdf->Cell(63, 10, '', 1, 0);
-$pdf->Cell(30, 10, 'Nro. PARTIDO', 1, 0, 'C', true);
-$pdf->Cell(30, 10, '', 1, 0);
-$pdf->Cell(17, 10, 'PAGO', 1, 0, 'C', true);
-$pdf->Cell(8, 10, 'SI', 1, 0, 'C');
-$pdf->Cell(8, 10, 'NO', 1, 0, 'C');
-$pdf->Ln(15);
-
-// cabeceras de tabla
-$cabeceras = ['C/L', 'Nro.', 'Carnet', 'Apellido, Nombre', 'Firma'];
-$columnas = [12, 12, 28, 90, 44];
-
-for ($i = 0; $i < count($cabeceras); $i++) {
-    $pdf->Cell($columnas[$i], 8, $cabeceras[$i], 1, 0, 'C', true);
-}
-$pdf->Ln();
-
-$pdf->SetFont('Arial', '', 9);
 for ($i = 0; $i < 18; $i++) {
-    $dni = $_POST['jugadora' . $i];
-    if ($dni != ' ') {
-        $sth = $dbh->prepare('select * from personas where documento = :dni');
-        $sth->execute([':dni' => $dni]);
-        $campo = $sth->fetch(PDO::FETCH_ASSOC);
+    if ($_POST['jugadora' . $i] != ' ') {
+        for ($j = $i+1; $j < 18; $j++) {
+            if ($_POST['jugadora' . $j] != ' ') {
+                if ($_POST['jugadora' . $i] == $_POST['jugadora' . $j]) {
+                    $error = 'Hay al menos una jugadora repetida en la lista';
+                }
+                if ($_POST['numero-jugadora' . $i] == $_POST['numero-jugadora' . $j]) {
+                    $error1 = 'Hay al menos un numero de camiseta repetido en la lista';
+                }
+            }
+        }
+    }
+}
+$contadorC = 0;
+$contadorL = 0;
+for ($i = 0; $i < 18; $i++) {
+    if ($_POST['tipo-jugadora' . $i] == 'C') {
+        $contadorC += 1;
+    }
+    if ($_POST['tipo-jugadora' . $i] == 'L') {
+        $contadorL += 1;
+    }
+}
+if ($contadorC > 1) {
+    $error2 = 'Solo se permite 1 capitan en el equipo';
+}
+if ($contadorL > 2) {
+    $error3 = 'Solo se permiten hasta 2 liberos';
+}
 
-        $carnet = $campo['carnet']!=0 ? $campo['carnet'] : $campo['documento'];
-        $faltantes ='';
-        if($campo['fecha_ticket']==NULL){$faltantes.=' T';}
-        if($campo['foto_4x4_ok']!='OK'){$faltantes.=' F';}
-        if($campo['dni_frente_ok']!='OK'){$faltantes.=' DF';}
-        if($campo['dni_dorso_ok']!='OK'){$faltantes.=' DD';}
-        if($faltantes!=''){$faltantes='('.$faltantes.')';}
 
-        $pdf->Cell($columnas[0], 8, $_POST['tipo-jugadora' . $i], 1, 0, 'C');
-        $pdf->Cell($columnas[1], 8, $_POST['numero-jugadora' . $i], 1, 0, 'C');
-        $pdf->Cell($columnas[2], 8, $carnet, 1, 0, 'C');
-        $pdf->Cell($columnas[3], 8, $campo['apellidos'] . ', ' . $campo['nombres'].' '.$faltantes, 1, 0);
-        $pdf->Cell($columnas[4], 8, ' ', 1, 0);
-    } else {
-        $pdf->Cell($columnas[0], 8, '', 1, 0, 'C');
-        $pdf->Cell($columnas[1], 8, '', 1, 0, 'C');
-        $pdf->Cell($columnas[2], 8, '', 1, 0, 'C');
-        $pdf->Cell($columnas[3], 8, '', 1, 0);
-        $pdf->Cell($columnas[4], 8, '', 1, 0);
+
+if (!isset($error) && !isset($error1) && !isset($error2) && !isset($error3)) {
+    // si esta todo ok, imprime la planilla
+    require_once 'Conexion.php';
+    $dbh = new Conexion;
+
+    require_once 'fpdf/fpdf.php';
+    $pdf = new FPDF();
+    $pdf->AddPage();
+    $pdf->SetFont('Arial', 'B', 20);
+
+    $pdf->SetTextColor(64, 64, 64);
+    $pdf->SetDrawColor(100, 100, 100);
+    $pdf->SetFillColor(225, 225, 225);
+
+    $pdf->Cell(186, 8, 'PLANILLA DE ENTRENADOR', 0, 0, 'C');
+    $pdf->Ln();
+
+    $pdf->SetFont('Arial', 'B', 9);
+    $pdf->Cell(60, 10, 'FORMACION DEL EQUIPO', 1, 0, 'C', true);
+    $pdf->Cell(102, 10, $_SESSION['equipo'][0], 1, 0, 'C');
+    $pdf->Cell(12, 10, 'A', 1, 0, 'C');
+    $pdf->Cell(12, 10, 'B', 1, 0, 'C');
+    $pdf->Ln();
+    $pdf->Cell(30, 10, 'EQUIPO "A"', 1, 0, 'C', true);
+    $pdf->Cell(63, 10, '', 1, 0);
+    $pdf->Cell(30, 10, 'EQUIPO "B"', 1, 0, 'C', true);
+    $pdf->Cell(63, 10, '', 1, 0);
+    $pdf->Ln();
+    $pdf->Cell(30, 10, 'FECHA', 1, 0, 'C', true);
+    $pdf->Cell(63, 10, '', 1, 0);
+    $pdf->Cell(30, 10, 'Nro. PARTIDO', 1, 0, 'C', true);
+    $pdf->Cell(30, 10, '', 1, 0);
+    $pdf->Cell(17, 10, 'PAGO', 1, 0, 'C', true);
+    $pdf->Cell(8, 10, 'SI', 1, 0, 'C');
+    $pdf->Cell(8, 10, 'NO', 1, 0, 'C');
+    $pdf->Ln(15);
+
+    // cabeceras de tabla
+    $cabeceras = ['C/L', 'Nro.', 'Carnet', 'Apellido, Nombre', 'Firma'];
+    $columnas = [12, 12, 28, 90, 44];
+
+    for ($i = 0; $i < count($cabeceras); $i++) {
+        $pdf->Cell($columnas[$i], 8, $cabeceras[$i], 1, 0, 'C', true);
     }
     $pdf->Ln();
+
+    $pdf->SetFont('Arial', '', 9);
+    for ($i = 0; $i < 18; $i++) {
+        $dni = $_POST['jugadora' . $i];
+        if ($dni != ' ') {
+            $sth = $dbh->prepare('select * from personas where documento = :dni');
+            $sth->execute([':dni' => $dni]);
+            $campo = $sth->fetch(PDO::FETCH_ASSOC);
+
+            $carnet = $campo['carnet'] != 0 ? $campo['carnet'] : $campo['documento'];
+            $faltantes = '';
+            if ($campo['fecha_ticket'] == NULL) {
+                $faltantes .= ' T';
+            }
+            if ($campo['foto_4x4_ok'] != 'OK') {
+                $faltantes .= ' F';
+            }
+            if ($campo['dni_frente_ok'] != 'OK') {
+                $faltantes .= ' DF';
+            }
+            if ($campo['dni_dorso_ok'] != 'OK') {
+                $faltantes .= ' DD';
+            }
+            if ($faltantes != '') {
+                $faltantes = '(' . $faltantes . ')';
+            }
+
+            $pdf->Cell($columnas[0], 8, $_POST['tipo-jugadora' . $i], 1, 0, 'C');
+            $pdf->Cell($columnas[1], 8, $_POST['numero-jugadora' . $i], 1, 0, 'C');
+            $pdf->Cell($columnas[2], 8, $carnet, 1, 0, 'C');
+            $pdf->Cell($columnas[3], 8, $campo['apellidos'] . ', ' . $campo['nombres'] . ' ' . $faltantes, 1, 0);
+            $pdf->Cell($columnas[4], 8, ' ', 1, 0);
+        } else {
+            $pdf->Cell($columnas[0], 8, '', 1, 0, 'C');
+            $pdf->Cell($columnas[1], 8, '', 1, 0, 'C');
+            $pdf->Cell($columnas[2], 8, '', 1, 0, 'C');
+            $pdf->Cell($columnas[3], 8, '', 1, 0);
+            $pdf->Cell($columnas[4], 8, '', 1, 0);
+        }
+        $pdf->Ln();
+    }
+    $pdf->Cell(24, 8, 'ENTRENADOR', 1, 0, 'C', true);
+    $sth = $dbh->prepare('select * from equipos where nombre_equipo = :equipo and torneo = :torneo');
+    $sth->execute([':equipo' => $_SESSION['equipo'][0], ':torneo' => $_SESSION['equipo'][1]]);
+    $equipo = $sth->fetch(PDO::FETCH_ASSOC);
+    $entrenador_dni = $equipo['documento_entrenador'] != 0 ? $equipo['documento_entrenador'] : '';
+    $entrenador_nombre = '';
+    if ($entrenador_dni != '') {
+        $sth = $dbh->prepare('select * from personas where documento = :dni');
+        $sth->execute([':dni' => $entrenador_dni]);
+        $datos_entrenador = $sth->fetch(PDO::FETCH_ASSOC);
+        $entrenador_nombre = $datos_entrenador['apellidos'] . ', ' . $datos_entrenador['nombres'];
+        if ($datos_entrenador['carnet'] != 0) {
+            $entrenador_dni = $datos_entrenador['carnet'];
+        }
+    }
+
+    $pdf->Cell($columnas[2], 8, $entrenador_dni, 1, 0, 'C');
+    $pdf->Cell($columnas[3], 8, $entrenador_nombre, 1, 0);
+    $pdf->Cell($columnas[4], 8, '', 1, 0);
+    $pdf->Ln();
+    $pdf->Cell(24, 8, 'AUXILIAR', 1, 0, 'C', true);
+    $pdf->Cell($columnas[2], 8, '', 1, 0);
+    $pdf->Cell($columnas[3], 8, '', 1, 0);
+    $pdf->Cell($columnas[4], 8, '', 1, 0);
+    $pdf->Ln(12);
+
+    $pdf->Cell(33, 8, '1er juego', 1, 0, 'C', true);
+    $pdf->Cell(5, 8, '', 0, 0);
+    $pdf->Cell(33, 8, '2do juego', 1, 0, 'C', true);
+    $pdf->Cell(5, 8, '', 0, 0);
+    $pdf->Cell(33, 8, '3er juego', 1, 0, 'C', true);
+    $pdf->Cell(5, 8, '', 0, 0);
+    $pdf->Cell(33, 8, '4to juego', 1, 0, 'C', true);
+    $pdf->Cell(5, 8, '', 0, 0);
+    $pdf->Cell(33, 8, '5to juego', 1, 0, 'C', true);
+    $pdf->Ln();
+
+    $pdf->Cell(11, 8, '', 1, 0);
+    $pdf->Cell(11, 8, '', 1, 0);
+    $pdf->Cell(11, 8, '', 1, 0);
+    $pdf->Cell(5, 8, '', 0, 0);
+    $pdf->Cell(11, 8, '', 1, 0);
+    $pdf->Cell(11, 8, '', 1, 0);
+    $pdf->Cell(11, 8, '', 1, 0);
+    $pdf->Cell(5, 8, '', 0, 0);
+    $pdf->Cell(11, 8, '', 1, 0);
+    $pdf->Cell(11, 8, '', 1, 0);
+    $pdf->Cell(11, 8, '', 1, 0);
+    $pdf->Cell(5, 8, '', 0, 0);
+    $pdf->Cell(11, 8, '', 1, 0);
+    $pdf->Cell(11, 8, '', 1, 0);
+    $pdf->Cell(11, 8, '', 1, 0);
+    $pdf->Cell(5, 8, '', 0, 0);
+    $pdf->Cell(11, 8, '', 1, 0);
+    $pdf->Cell(11, 8, '', 1, 0);
+    $pdf->Cell(11, 8, '', 1, 0);
+    $pdf->Ln();
+    $pdf->Cell(11, 8, '', 1, 0);
+    $pdf->Cell(11, 8, '', 1, 0);
+    $pdf->Cell(11, 8, '', 1, 0);
+    $pdf->Cell(5, 8, '', 0, 0);
+    $pdf->Cell(11, 8, '', 1, 0);
+    $pdf->Cell(11, 8, '', 1, 0);
+    $pdf->Cell(11, 8, '', 1, 0);
+    $pdf->Cell(5, 8, '', 0, 0);
+    $pdf->Cell(11, 8, '', 1, 0);
+    $pdf->Cell(11, 8, '', 1, 0);
+    $pdf->Cell(11, 8, '', 1, 0);
+    $pdf->Cell(5, 8, '', 0, 0);
+    $pdf->Cell(11, 8, '', 1, 0);
+    $pdf->Cell(11, 8, '', 1, 0);
+    $pdf->Cell(11, 8, '', 1, 0);
+    $pdf->Cell(5, 8, '', 0, 0);
+    $pdf->Cell(11, 8, '', 1, 0);
+    $pdf->Cell(11, 8, '', 1, 0);
+    $pdf->Cell(11, 8, '', 1, 0);
+    $pdf->Ln(15);
+
+    $pdf->SetFont('Arial', 'B', 8);
+    $pdf->Cell(8, 6, 'C/L:', 'LT', 0, 'C');
+    $pdf->SetFont('Arial', '', 8);
+    $pdf->Cell(63, 6, 'Indicar con la inicial quienes son capitan y liberos. ', 'T', 0, 'C');
+    $pdf->SetFont('Arial', 'B', 8);
+    $pdf->Cell(8, 6, 'Nro.:', 'T', 0, 'C');
+    $pdf->SetFont('Arial', '', 8);
+    $pdf->Cell(36, 6, 'Indicar numero de camiseta.', 'T', 0, 'C');
+    $pdf->SetFont('Arial', 'B', 8);
+    $pdf->Cell(10, 6, 'Carnet:', 'T', 0, 'C');
+    $pdf->SetFont('Arial', '', 8);
+    $pdf->Cell(61, 6, 'Indicar numero de carnet de PODIO. De no ', 'TR', 0);
+    $pdf->Ln();
+    $pdf->Cell(186, 6, 'poseerlo, indicar numero de DNI. Se permite un maximo de 18 jugadoras en planilla. Con mas de 12 jugadoras es obligatoria la presentacion de 2', 'LR', 0);
+    $pdf->Ln();
+    $pdf->Cell(186, 6, 'libero. Con hasta 12 jugadoras, puede haber ninguna, 1 o 2 liberos.', 'LRB', 0);
+    $pdf->Output();
+} else {
+    // existe algun error en la planilla
+    require_once 'include/header.php';
+?>
+    <style>
+        .btn-container{
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        h3{
+            text-align: center;
+            margin: 30px 0;
+        }
+    </style>
+    </head>
+
+    <body>
+        <section class="main-container">
+            <h2>Atención!</h2>
+            <?php
+            if(isset($error)){
+                ?>
+                <h3><?=$error?></h3>
+                <?php
+            }
+            ?>
+            <?php
+            if(isset($error1)){
+                ?>
+                <h3><?=$error1?></h3>
+                <?php
+            }
+            ?>
+            <?php
+            if(isset($error2)){
+                ?>
+                <h3><?=$error2?></h3>
+                <?php
+            }
+            ?>
+            <?php
+            if(isset($error3)){
+                ?>
+                <h3><?=$error3?></h3>
+                <?php
+            }
+            ?>
+            <div class="btn-container">
+                <button class="form-btn" >cerrar</button>
+            </div>
+        </section>
+
+
+        <script>
+            const cerrar = document.querySelector('button');
+            cerrar.addEventListener('click', (e)=>{
+                window.close();
+            })
+        </script>
+    </body>
+<?php
 }
-$pdf->Cell(24, 8, 'ENTRENADOR', 1, 0, 'C', true);
-$sth = $dbh->prepare('select * from equipos where nombre_equipo = :equipo and torneo = :torneo');
-$sth->execute([':equipo'=>$_SESSION['equipo'][0], ':torneo'=>$_SESSION['equipo'][1]]);
-$equipo = $sth->fetch(PDO::FETCH_ASSOC);
-$entrenador_dni = $equipo['documento_entrenador']!=0 ? $equipo['documento_entrenador']:'';
-$entrenador_nombre = '';
-if ($entrenador_dni!=''){
-    $sth = $dbh->prepare('select * from personas where documento = :dni');
-    $sth->execute([':dni'=>$entrenador_dni]);
-    $datos_entrenador = $sth->fetch(PDO::FETCH_ASSOC);
-    $entrenador_nombre = $datos_entrenador['apellidos'].', '.$datos_entrenador['nombres'];
-    if ($datos_entrenador['carnet']!=0){$entrenador_dni = $datos_entrenador['carnet'];}
-}
-
-$pdf->Cell($columnas[2], 8, $entrenador_dni, 1, 0, 'C');
-$pdf->Cell($columnas[3], 8, $entrenador_nombre, 1, 0);
-$pdf->Cell($columnas[4], 8, '', 1, 0);
-$pdf->Ln();
-$pdf->Cell(24, 8, 'AUXILIAR', 1, 0, 'C', true);
-$pdf->Cell($columnas[2], 8, '', 1, 0);
-$pdf->Cell($columnas[3], 8, '', 1, 0);
-$pdf->Cell($columnas[4], 8, '', 1, 0);
-$pdf->Ln(12);
-
-$pdf->Cell(33, 8, '1er juego', 1, 0, 'C', true);
-$pdf->Cell(5, 8, '', 0, 0);
-$pdf->Cell(33, 8, '2do juego', 1, 0, 'C', true);
-$pdf->Cell(5, 8, '', 0, 0);
-$pdf->Cell(33, 8, '3er juego', 1, 0, 'C', true);
-$pdf->Cell(5, 8, '', 0, 0);
-$pdf->Cell(33, 8, '4to juego', 1, 0, 'C', true);
-$pdf->Cell(5, 8, '', 0, 0);
-$pdf->Cell(33, 8, '5to juego', 1, 0, 'C', true);
-$pdf->Ln();
-
-$pdf->Cell(11, 8, '', 1, 0);
-$pdf->Cell(11, 8, '', 1, 0);
-$pdf->Cell(11, 8, '', 1, 0);
-$pdf->Cell(5, 8, '', 0, 0);
-$pdf->Cell(11, 8, '', 1, 0);
-$pdf->Cell(11, 8, '', 1, 0);
-$pdf->Cell(11, 8, '', 1, 0);
-$pdf->Cell(5, 8, '', 0, 0);
-$pdf->Cell(11, 8, '', 1, 0);
-$pdf->Cell(11, 8, '', 1, 0);
-$pdf->Cell(11, 8, '', 1, 0);
-$pdf->Cell(5, 8, '', 0, 0);
-$pdf->Cell(11, 8, '', 1, 0);
-$pdf->Cell(11, 8, '', 1, 0);
-$pdf->Cell(11, 8, '', 1, 0);
-$pdf->Cell(5, 8, '', 0, 0);
-$pdf->Cell(11, 8, '', 1, 0);
-$pdf->Cell(11, 8, '', 1, 0);
-$pdf->Cell(11, 8, '', 1, 0);
-$pdf->Ln();
-$pdf->Cell(11, 8, '', 1, 0);
-$pdf->Cell(11, 8, '', 1, 0);
-$pdf->Cell(11, 8, '', 1, 0);
-$pdf->Cell(5, 8, '', 0, 0);
-$pdf->Cell(11, 8, '', 1, 0);
-$pdf->Cell(11, 8, '', 1, 0);
-$pdf->Cell(11, 8, '', 1, 0);
-$pdf->Cell(5, 8, '', 0, 0);
-$pdf->Cell(11, 8, '', 1, 0);
-$pdf->Cell(11, 8, '', 1, 0);
-$pdf->Cell(11, 8, '', 1, 0);
-$pdf->Cell(5, 8, '', 0, 0);
-$pdf->Cell(11, 8, '', 1, 0);
-$pdf->Cell(11, 8, '', 1, 0);
-$pdf->Cell(11, 8, '', 1, 0);
-$pdf->Cell(5, 8, '', 0, 0);
-$pdf->Cell(11, 8, '', 1, 0);
-$pdf->Cell(11, 8, '', 1, 0);
-$pdf->Cell(11, 8, '', 1, 0);
-$pdf->Ln(15);
-
-$pdf->SetFont('Arial', 'B', 8);
-$pdf->Cell(8,6,'C/L:', 'LT',0,'C');
-$pdf->SetFont('Arial', '', 8);
-$pdf->Cell(63, 6,'Indicar con la inicial quienes son capitan y liberos. ', 'T',0,'C');
-$pdf->SetFont('Arial', 'B', 8);
-$pdf->Cell(8,6,'Nro.:','T',0,'C');
-$pdf->SetFont('Arial', '', 8);
-$pdf->Cell(36, 6,'Indicar numero de camiseta.', 'T',0,'C');
-$pdf->SetFont('Arial', 'B', 8);
-$pdf->Cell(10,6,'Carnet:', 'T',0,'C');
-$pdf->SetFont('Arial', '', 8);
-$pdf->Cell(61, 6,'Indicar numero de carnet de PODIO. De no ', 'TR',0);
-$pdf->Ln();
-$pdf->Cell(186,6,'poseerlo, indicar numero de DNI. Se permite un maximo de 18 jugadoras en planilla. Con mas de 12 jugadoras es obligatoria la presentacion de 2','LR',0);
-$pdf->Ln();
-$pdf->Cell(186,6,'libero. Con hasta 12 jugadoras, puede haber ninguna, 1 o 2 liberos.','LRB',0);
-$pdf->Output();
+?>
